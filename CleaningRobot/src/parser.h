@@ -1,8 +1,20 @@
+#ifndef HEADER1_H
+#define HEADER1_H
+
 #include <iostream>
 #include <stack>
 #include <fstream>
 #include <sstream>
 #include <vector>
+
+struct InfoCenario {
+    std::string nome;
+    int altura;
+    int largura;
+    int x;
+    int y;
+    std::string matriz; // a definicao de matriz sera feita posteriormente
+};
 
 int addIdentifier(std::string &identifier, std::string &type, std::stack<std::string> &stack) {
     // Verificando se o aninhamento de indentificadores esta correto
@@ -74,10 +86,11 @@ std::string getInfo(std::string content, const std::string tag, std::string cena
     std::size_t start = content.find("<" + tag + ">", content.find(startSearch) + startSearch.size());
     std::size_t end = content.find("</" + tag + ">", start);
 
-    std::string result = content.substr(start + tag.size() + 2, end - start - tag.size() - 3); // retorna o conteudo da tag (o que estiver entre)
+    std::string result = content.substr(start + tag.size() + 2, end - start - tag.size() - 2); // retorna o conteudo da tag (o que estiver entre)
     return result;
 }
 
+    // retorna os nomes dos cenarios presentes no arquivo
 std::vector<std::string> getCenarios(std::string content) {
 
     std::vector<std::string> cenarios;
@@ -90,7 +103,22 @@ std::vector<std::string> getCenarios(std::string content) {
 
         start = content.find("<nome>", end);
     }
-
     return cenarios;
 }
 
+    // retorna todos as informacoes de cada cenario
+struct InfoCenario getInfoCenario(std::string content, std::string cenario) {
+
+    InfoCenario info;
+
+    // utiliza a funcao getInfo para obter e atribui os valores a struct InfoCenario
+    info.nome = cenario;
+    info.altura = std::stoi(getInfo(content, "altura", cenario));
+    info.largura = std::stoi(getInfo(content, "largura", cenario));
+    info.x = std::stoi(getInfo(content, "x", cenario));
+    info.y = std::stoi(getInfo(content, "y", cenario));
+    info.matriz = getInfo(content, "matriz", cenario);
+
+    return info;
+}
+#endif

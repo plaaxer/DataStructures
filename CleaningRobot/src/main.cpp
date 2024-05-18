@@ -8,7 +8,7 @@ void parserFileError(std::ifstream &file);
 int addIdentifier(std::string &identifier, std::string &type, std::stack<std::string> &stack);
 std::string getInfo(std::string content, const std::string tag, std::size_t cenario);
 std::vector<std::string> getCenarios(std::string content);
-
+struct InfoCenario getInfoCenario(std::string content, std::string cenario);
 
 // Area.h
 Matrix nullMatrix(int altura, int largura);
@@ -23,12 +23,13 @@ std::string getFileContent(std::ifstream &file) {
 int main() {
 
     // Nome do arquivo
-    char xmlfilename[100];
-    std::cin >> xmlfilename;
+    //char xmlfilename[100];
+    //std::cin >> xmlfilename;
 
     // Abrindo o arquivo
     std::ifstream file;
-    file.open("cenarios/" + std::string(xmlfilename) + ".xml");
+    //file.open("cenarios/" + std::string(xmlfilename) + ".xml");
+    file.open("cenarios/teste.xml");
 
     // Checando se o arquivo foi aberto corretamente
     if (!file.is_open()) {
@@ -47,13 +48,16 @@ int main() {
     // Pega o nome dos cenarios no arquivo
     std::vector<std::string> cenarios = getCenarios(content);
 
+    // Pega as informacoes dos cenarios
+    std::vector<struct InfoCenario> infoCenarios;
+
     for (std::string cenario : cenarios) {
-        std::cout << cenario << std::endl;
+        infoCenarios.push_back(getInfoCenario(content, cenario));
     }
-
-    std::cout << getInfo(content, "abc", "cenario-01") << std::endl;
-    std::cout << getInfo(content, "abc", "cenario-00") << std::endl;
-
+    
+    for (struct InfoCenario infoCenario : infoCenarios) {
+        Matrix newMatrix = MatrixCreator(infoCenario);
+    }
     // Matrix matrizNova = nullMatrix(altura, largura);
 
     // Fecha o arquivo

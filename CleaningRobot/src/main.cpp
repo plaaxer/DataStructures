@@ -1,83 +1,62 @@
 #include <iostream>
 #include <fstream>
-#include <stack>
+#include "area.h"
+#include "parser.h"
 
-void addIdentifier(std::string &identifier, std::string &type, std::stack<std::string> &stack) {
-    if (type == "abertura") {
-        stack.push(identifier);
-    } else {
-        if (stack.empty()) {
-            std::cout << "ERRO: identificador de fechamento sem nenhum de abertura (stack vazia)." << std::endl;
-            return;
-        } else {
-            std::string top = stack.top();
-            if (top != identifier) {
-                std::cout << "ERRO: identificador de fechamento nao corresponde ao ultimo de abertura." << std::endl;
-                return;
-            }
-            stack.pop();
-        }
-    }
-}
+// Parser.h
+void parserFileError(std::ifstream &file);
+int addIdentifier(std::string &identifier, std::string &type, std::stack<std::string> &stack);
+std::string getInfo(std::string content, const std::string tag, std::size_t cenario);
+std::vector<std::string> getCenarios(std::string content);
 
-void parserFile(std::ifstream &file) {
-    // Initialize the stack
-    std::stack<std::string> stack;
 
-    // Read and process the contents of the file
-    bool active = false;
-    std::string line;
-    std::string identifier;
-    std::string type;
+// Area.h
+Matrix nullMatrix(int altura, int largura);
 
-    while (std::getline(file, line)) {
-        for (std::size_t i = 0; i < line.size(); ++i) {
-            char c = line[i];
-            if (c == '>') {
-                addIdentifier(identifier, type, stack);
-                identifier = "";
-                active = false;
-            }
-            if (active && c != '/') {
-                identifier += c;
-            }
-            if (c == '<') {
-                char nextChar = line[i + 1];
-                if (nextChar == '/') {
-                    type = "fechamento";
-                } else {
-                    type = "abertura";
-                }
-                active = true;
-            }
-        }
-    }
-    if (!stack.empty()) {
-        std::cout << "ERRO: identificador de abertura sem identificador de fechamento correspondente." << std::endl;
-        return; // Stop the code execution and return the error
-    }
+std::string getFileContent(std::ifstream &file) {
+    std::stringstream buffer;
+    buffer << file.rdbuf(); // bufferiza o conteudo do arquivo  
+    std::string content = buffer.str(); // conteudo do arquivo passa de stringstream para string
+    return content;
 }
 
 int main() {
 
-    // Get the file name
+    // Nome do arquivo
     char xmlfilename[100];
     std::cin >> xmlfilename;
 
-    // Open the file
+    // Abrindo o arquivo
     std::ifstream file;
     file.open("cenarios/" + std::string(xmlfilename) + ".xml");
 
-    // Check if the file was successfully opened
+    // Checando se o arquivo foi aberto corretamente
     if (!file.is_open()) {
         std::cout << "ERRO: falha abertura do arquivo." << std::endl;
         return 1;
     }
 
-    // Test the file
-    parserFile(file);
+    // Testando o arquivo para aninhamento correto
+    parserFileError(file);
+    file.clear();
+    file.seekg(0, std::ios::beg); // limpando buffer/ponteiro do arquivo
 
-    // Close the file
+    // Transforma arquivo em string
+    std::string content = getFileContent(file);
+
+    // Pega o nome dos cenarios no arquivo
+    std::vector<std::string> cenarios = getCenarios(content);
+
+    for (std::string cenario : cenarios) {
+        std::cout << cenario << std::endl;
+    }
+
+    std::cout << getInfo(content, "abc", "cenario-01") << std::endl;
+    std::cout << getInfo(content, "abc", "cenario-00") << std::endl;
+
+    // Matrix matrizNova = nullMatrix(altura, largura);
+
+    // Fecha o arquivo
     file.close();
 
     return 0;

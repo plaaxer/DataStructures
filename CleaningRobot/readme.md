@@ -6,6 +6,7 @@ j+1 --> por causa do \n do comeco
 j+1 + (i * info.largura) --> para percorrer as linhas
 j+1 + (i * info.largura) + i --> a cada troca de linha ha mais um \n
 
-a logica para acesso de info.matriz esta correta
-o problema eh na parte de atribuicao, por algum motivo add 48 ao numero
-checar depois oq ue eh que acontece.
+criacao de matrizes: ok --> usar print(matriz) para testar.
+agora falta a implementacao do codigo em si.
+
+provavelmente tudo arrumado tirando a area q esta dando zero, checar amanha

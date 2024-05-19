@@ -12,6 +12,7 @@ struct InfoCenario getInfoCenario(std::string content, std::string cenario);
 
 // Area.h
 Matrix nullMatrix(int altura, int largura);
+Matrix MatrixCreator(struct InfoCenario info);
 
 std::string getFileContent(std::ifstream &file) {
     std::stringstream buffer;
@@ -56,9 +57,10 @@ int main() {
     }
     
     for (struct InfoCenario infoCenario : infoCenarios) {
-        Matrix newMatrix = MatrixCreator(infoCenario);
+        Matrix MainMatrix = MatrixCreator(infoCenario);
+        printMatrix(MainMatrix);
+        calculateArea(MainMatrix, infoCenario);
     }
-    // Matrix matrizNova = nullMatrix(altura, largura);
 
     // Fecha o arquivo
     file.close();

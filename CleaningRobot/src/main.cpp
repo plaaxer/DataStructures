@@ -4,7 +4,7 @@
 #include "parser.h"
 
 // Parser.h
-void parserFileError(std::ifstream &file);
+int parserFileError(std::ifstream &file);
 int addIdentifier(std::string &identifier, std::string &type, std::stack<std::string> &stack);
 std::string getInfo(std::string content, const std::string tag, std::size_t cenario);
 std::vector<std::string> getCenarios(std::string content);
@@ -24,13 +24,12 @@ std::string getFileContent(std::ifstream &file) {
 int main() {
 
     // Nome do arquivo
-    //char xmlfilename[100];
-    //std::cin >> xmlfilename;
+    char xmlfilename[100];
+    std::cin >> xmlfilename;
 
     // Abrindo o arquivo
     std::ifstream file;
-    //file.open("cenarios/" + std::string(xmlfilename) + ".xml");
-    file.open("cenarios/teste.xml");
+    file.open("cenarios/" + std::string(xmlfilename));
 
     // Checando se o arquivo foi aberto corretamente
     if (!file.is_open()) {
@@ -39,7 +38,11 @@ int main() {
     }
 
     // Testando o arquivo para aninhamento correto
-    parserFileError(file);
+    int result = parserFileError(file);
+    if (result == 1) {
+        std::cout << "erro" << std::endl;
+        return 1;
+    }
     file.clear();
     file.seekg(0, std::ios::beg); // limpando buffer/ponteiro do arquivo
 
@@ -53,12 +56,10 @@ int main() {
     std::vector<struct InfoCenario> infoCenarios;
 
     for (std::string cenario : cenarios) {
-        infoCenarios.push_back(getInfoCenario(content, cenario));
+        infoCenarios.push_back(getInfoCenario(content, cenario)); // erro no recebimento de informacoes info.altura, info.matriz, etc
     }
-    
     for (struct InfoCenario infoCenario : infoCenarios) {
         Matrix MainMatrix = MatrixCreator(infoCenario);
-        printMatrix(MainMatrix);
         calculateArea(MainMatrix, infoCenario);
     }
 

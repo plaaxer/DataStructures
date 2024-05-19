@@ -34,7 +34,7 @@ int addIdentifier(std::string &identifier, std::string &type, std::stack<std::st
     return 0;
 }
 
-void parserFileError(std::ifstream &file) {
+int parserFileError(std::ifstream &file) {
     // Inicializando a stack
     std::stack<std::string> stack;
 
@@ -52,8 +52,7 @@ void parserFileError(std::ifstream &file) {
                 int result = addIdentifier(identifier, type, stack);
                 // addIdentifier retorna 1 se houver erro
                 if (result == 1) {
-                    std::cout << "erro" << std::endl;
-                    return;
+                    return 1;
                 }
                 identifier = "";
                 active = false;
@@ -74,18 +73,22 @@ void parserFileError(std::ifstream &file) {
         }
     }
     if (!stack.empty()) {
-        std::cout << "erro" << std::endl;
-        return; // Se stack nao vazia
+        return 1; // Se stack nao vazia
     }
+    return 0;
 }
 
     // retorna o conteudo dentro de uma tag a partir de um cenario
 std::string getInfo(std::string content, const std::string tag, std::string cenario) { 
 
-    std::string startSearch = "<" + cenario + ">"; // comeca a procurar a partir do cenario escolhido
+    std::string startSearch = cenario; // comeca a procurar a partir do cenario escolhido
+
     std::size_t start = content.find("<" + tag + ">", content.find(startSearch) + startSearch.size());
     std::size_t end = content.find("</" + tag + ">", start);
-
+    if (content.find(startSearch) == std::string::npos) {
+        std::cout << "CONTENT NAME NAO ACHADO" << std::endl; //debugging
+        return "";
+    }
     std::string result = content.substr(start + tag.size() + 2, end - start - tag.size() - 2); // retorna o conteudo da tag (o que estiver entre)
     return result;
 }
